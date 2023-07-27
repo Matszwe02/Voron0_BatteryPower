@@ -72,7 +72,7 @@ The mod also includes space for an external RJ45 to usb adapter, form which you 
 ## Wiring
 - There's a slot for 2 `WAGO 221-415` connectors for batteries
 - connect everything like on the schematic
-  - ![](diagram.png)
+  - ![](Diagram.png)
 
 - I created 2 custom boards:
   - one for creating soft-start for cc/cv boost converter, which also works as current limit switch (so on 12V in it's drawing 1.5A, on 20V it's drawing 3.25A)
