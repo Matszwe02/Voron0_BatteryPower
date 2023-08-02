@@ -17,32 +17,46 @@ def restart_klipper(x):
         if gpio.input(12) == gpio.HIGH:
             return
         sleep(0.01)
-    run_gcode("OFF")
+    run_gcode("_OFF")
     sleep(1)
     run_gcode("M112")
     sleep(0.2)
     run_gcode("firmware_restart")
 
 
+def shutdown_printer(x):
+    for _ in range(50):
+        if gpio.input(20) == gpio.LOW:
+            return
+        sleep(0.01)
+    run_gcode("_SHUTDOWN")
+    sleep(120)
+    os.system("shutdown -h now")
+    sleep(120)
+
+
 gpio.setmode(gpio.BCM)
 
 gpio.setup(16, gpio.OUT)
 gpio.setup(21, gpio.OUT)
-gpio.setup(20, gpio.IN)
+# gpio.setup(20, gpio.IN)
+gpio.setup(20, gpio.IN, pull_up_down=gpio.PUD_DOWN)
+gpio.setup(12, gpio.IN, pull_up_down=gpio.PUD_UP)
 
 gpio.output(16, gpio.LOW)
 gpio.output(21, gpio.HIGH)
 
 sleep(1)
 
-# if you want to wire the v0 display kill switch to restart firmware instead of halting it:
-# gpio.setup(12, gpio.IN, pull_up_down=gpio.PUD_UP)
-# gpio.add_event_detect(12, gpio.FALLING)
-# gpio.add_event_callback(12, restart_klipper)
+gpio.add_event_detect(12, gpio.FALLING)
+gpio.add_event_callback(12, restart_klipper)
+gpio.add_event_detect(20, gpio.RISING)
+gpio.add_event_callback(20, shutdown_printer)
 
-
-gpio.wait_for_edge(20, gpio.RISING)
-run_gcode("SHUTDOWN")
-sleep(120)
-os.system("shutdown -h now")
-sleep(120)
+while True:
+    sleep(60)
+# gpio.wait_for_edge(20, gpio.RISING)
+# run_gcode("_SHUTDOWN")
+# sleep(120)
+# os.system("shutdown -h now")
+# sleep(120)
